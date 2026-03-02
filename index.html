@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Jackyto Racing🏎️</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: black; }
+    #score {
+      position: absolute;
+      top: 20px;
+      left: 10px;
+      color: white;
+      font-family: Arial;
+      font-size: 20px;
+    }
+    .controls {
+      position: fixed;
+      bottom: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+    }
+    button {
+      width: 70px;
+      height: 60px;
+      font-size: 30px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.3);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<div id="score">Puntos: 1</div>
+
+<div class="controls">
+  <button id="leftBtn">⬅️</button>
+  <button id="rightBtn">➡️</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+let scene = new THREE.Scene();
+scene.background = new THREE.Color(0x111111);
+
+let camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+let renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+let light = new THREE.DirectionalLight(0xffffff, 0.8);
+light.position.set(7,5,7);
+scene.add(light);
+
+
+let road = new THREE.Mesh(
+  new THREE.PlaneGeometry(10, 200),
+  new THREE.MeshPhongMaterial({color:0x333333})
+);
+road.rotation.x = -Math.PI/2;
+scene.add(road);
+
+
+let car = new THREE.Mesh(
+  new THREE.BoxGeometry(2,1,5),
+  new THREE.MeshPhongMaterial({color:0xff0000})
+);
+car.position.y = 0.6;
+scene.add(car);
+
+camera.position.set(0,6,10);
+camera.lookAt(car.position);
+
+
+let enemies = [];
+let enemySpeed = 0.9;
+
+function createEnemy(){
+  let enemy = new THREE.Mesh(
+    new THREE.BoxGeometry(2,1,4),
+    new THREE.MeshPhongMaterial({color:0x00ff00})
+  );
+  enemy.position.set((Math.random()*6)-3, 0.5, -100);
+  scene.add(enemy);
+  enemies.push(enemy);
+}
+
+for(let i=0;i<5;i++){
+  createEnemy();
+}
+
+
+let keys = {};
+let moveLeft = false;
+let moveRight = false;
+
+document.addEventListener("keydown", e => keys[e.key]=true);
+document.addEventListener("keyup", e => keys[e.key]=false);
+
+
+let leftBtn = document.getElementById("leftBtn");
+let rightBtn = document.getElementById("rightBtn");
+
+leftBtn.ontouchstart = () => moveLeft = true;
+leftBtn.ontouchend = () => moveLeft = false;
+
+rightBtn.ontouchstart = () => moveRight = true;
+rightBtn.ontouchend = () => moveRight = false;
+
+
+let score = 0;
+let scoreDisplay = document.getElementById("score");
+
+
+function checkCollision(a,b){
+  let box1 = new THREE.Box3().setFromObject(a);
+  let box2 = new THREE.Box3().setFromObject(b);
+  return box1.intersectsBox(box2);
+}
+
+
+function animate(){
+  requestAnimationFrame(animate);
+
+  
+  if(keys["ArrowLeft"]) car.position.x -= 0.3;
+  if(keys["ArrowRight"]) car.position.x += 0.3;
+
+  
+  if(moveLeft) car.position.x -= 0.3;
+  if(moveRight) car.position.x += 0.3;
+
+  
+  car.position.x = Math.max(-4, Math.min(4, car.position.x));
+
+  
+  enemies.forEach(enemy => {
+    enemy.position.z += enemySpeed;
+
+    if(enemy.position.z > 10){
+      enemy.position.z = -100;
+      enemy.position.x = (Math.random()*6)-3;
+      score++;
+      scoreDisplay.innerText = "Puntos: " + score;
+    }
+
+    if(checkCollision(car, enemy)){
+      alert("💥 Perdiste MMG!");
+      score = 0;
+      scoreDisplay.innerText = "Puntos: 0";
+      car.position.x = 0;
+      enemy.position.z = -100;
+    }
+  });
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+
+</body>
+</html>
+
+//Since 2019//
