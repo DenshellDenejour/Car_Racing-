@@ -8,7 +8,4 @@ This game was created in 2019, at that time I was 14 years old and I wasn't sure
 
 To develop this game, I used JavaScript, HTML, and CSS—the typical basic languages of web programming. I never had any trouble with HTML or CSS, but with JavaScript, it wasn't that I didn't understand it; it was just that I found the JS syntax complicated. In fact, I started programming with Python, and I found it easier to understand thanks to its simpler syntax.
 
-Well, I'll leave you the Codepen link so you can check it out and play it if you want.
-
-
-https://codepen.io/Denshell-Denejour-the-selector/pen/NPRGLbg
+Well, I'll leave you the Codepen link so you can check it out and play it if you want to play it.
